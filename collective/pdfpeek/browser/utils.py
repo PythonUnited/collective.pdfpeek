@@ -4,10 +4,23 @@ from collective.pdfpeek.async import get_queue
 from zc.lockfile import LockError
 from zc.lockfile import LockFile
 from zope.interface import Interface
+from pkg_resources import parse_version
+from zope.interface import alsoProvides
 
 import logging
 import os
 import tempfile
+import pkg_resources
+
+try:
+    plone_protect = pkg_resources.get_distribution('plone.protect')
+    if parse_version(plone_protect.version) < parse_version('3.0'):
+        HAS_PLONE_PROTECT = False
+    else:
+        from plone.protect.interfaces import IDisableCSRFProtection
+        HAS_PLONE_PROTECT = True
+except pkg_resources.DistributionNotFound:
+    HAS_PLONE_PROTECT = False
 
 LOCKFILE_NAME = os.path.join(tempfile.gettempdir(),
                              __name__ + '.process_conversion_queue')
@@ -29,6 +42,10 @@ class pdfpeekUtilView(BrowserView):
     def process_conversion_queue(self):
         """process the queue.
         """
+        if HAS_PLONE_PROTECT:
+            # Disabling CSRF protection
+            alsoProvides(self.request, IDisableCSRFProtection)
+
         try:
             lock = LockFile(LOCKFILE_NAME)
         except LockError:
