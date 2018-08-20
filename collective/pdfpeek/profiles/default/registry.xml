@@ -1,4 +1,11 @@
 <?xml version="1.0"?>
 <registry>
  <records interface="collective.pdfpeek.interfaces.IPDFPeekConfiguration" />
+ <records prefix="plone-resources/collective-pdfpeek"
+         interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+
+    <value key="css">
+      <element>++resource++collective.pdfpeek.stylesheets/pdfpeek.css</element>
+    </value>
+</records>
 </registry>
