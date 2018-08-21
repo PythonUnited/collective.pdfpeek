@@ -1,46 +1,18 @@
-<div tal:condition="context/check-preview/previews_on | nothing">
-  <!-- thumbnail scrollable -->
-  <div class="navi prevPage"></div>
-  <div id="thumbnails">
-    <div id="triggers" class="items">
-      <tal:block tal:repeat="page context/view-image-annotation/num_pages">
-    <tal:block tal:define="pagenum python:page + 1">
-      <img src="img.jpg"
-           tal:attributes="src string:${context/absolute_url}/++images++${pagenum}_thumb" />
-    </tal:block>
-      </tal:block>
+<tal:block tal:condition="context/check-preview/previews_on | nothing">
+    <div id="thumbnails"
+             tal:define="preview_width python:context.portal_registry['collective.pdfpeek.interfaces.IPDFPeekConfiguration.preview_width']">
+        <tal:block tal:repeat="page context/view-image-annotation/num_pages">
+            <tal:block tal:define="pagenum python:page + 1">
+                <a href="#pdfpeek-modal-${pagenum}"
+                   data-pat-plone-modal="width: ${preview_width}"
+                   class="pat-plone-modal">
+                    <img src="${context/absolute_url}/++images++${pagenum}_thumb"/>
+                </a>
+                <div id="pdfpeek-modal-${pagenum}"
+                     style="display: none">
+                    <img src="${context/absolute_url}/++images++${pagenum}_preview"/>
+                </div>
+            </tal:block>
+        </tal:block>
     </div>
-  </div>
-
-  <div class="navi nextPage"></div>
-
-  <br clear="all" />
-  <div id="box">
-    <p />
-    <p />
-    <p />
-    <p />
-  </div>
-<script type="text/javascript">
-    /* global $:false */
-    $(function() {
-       'use strict';
-
-       var imgs = $('#triggers img'),
-           thumbnail = $('#thumbnails');
-
-       // thumbnail scrollable
-       thumbnail.scrollable({
-           size: 4,
-           mousewheel: true});
-           //clickable: false});
-       imgs.reflect({height: 0.9, opacity: 0.2});
-       imgs.prepOverlay({
-           subtype: 'image',
-           urlmatch: '_thumb$',
-           urlreplace: '_preview',
-           config: {mask: 'transparent'}
-       });
-    });
-</script>
-</div>
+</tal:block>

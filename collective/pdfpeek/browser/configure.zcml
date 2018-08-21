@@ -5,27 +5,6 @@
 
     <include package="plone.browserlayer" />
 
-    <!-- Resource directory for javascripts -->
-    <browser:resourceDirectory
-        name="collective.pdfpeek.javascript"
-        directory="javascript"
-        layer=".interfaces.IPDFpeekLayer"
-        />
-
-    <!-- Resource directory for stylesheets -->
-    <browser:resourceDirectory
-        name="collective.pdfpeek.stylesheets"
-        directory="stylesheets"
-        layer=".interfaces.IPDFpeekLayer"
-        />
-
-    <!-- Resource directory for images -->
-    <browser:resourceDirectory
-        name="collective.pdfpeek.images"
-        directory="images"
-        layer=".interfaces.IPDFpeekLayer"
-        />
-
     <browser:page
         for="collective.pdfpeek.interfaces.IPDF"
         name="view-image-annotation"
