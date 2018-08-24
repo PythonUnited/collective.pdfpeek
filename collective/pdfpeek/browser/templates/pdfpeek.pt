@@ -6,11 +6,11 @@
                 <a href="#pdfpeek-modal-${pagenum}"
                    data-pat-plone-modal="width: ${preview_width}"
                    class="pat-plone-modal">
-                    <img src="${context/absolute_url}/++images++${pagenum}_thumb"/>
+                    <img src="${context/absolute_url}/++pdfpeekimages++${pagenum}_thumb"/>
                 </a>
                 <div id="pdfpeek-modal-${pagenum}"
                      style="display: none">
-                    <img src="${context/absolute_url}/++images++${pagenum}_preview"/>
+                    <img src="${context/absolute_url}/++pdfpeekimages++${pagenum}_preview"/>
                 </div>
             </tal:block>
         </tal:block>

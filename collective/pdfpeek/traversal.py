@@ -9,7 +9,7 @@ from zope.traversing.interfaces import ITraversable
 class PDFPeekImageScaleTraverser(object):
     """Used to traverse to images stored on IPDF objects
 
-    Traversing to portal/object/++images++/++page++1 will retrieve the first
+    Traversing to portal/object/++pdfpeekimages++/++page++1 will retrieve the first
     page of the pdf, acquisition-wrapped.
     """
     implements(ITraversable)
