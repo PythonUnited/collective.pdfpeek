@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collective.pdfpeek.interfaces import IPDF
+from plone.namedfile.utils import set_headers, stream_data
 from zope.component import adapts
 from zope.interface import implements
 from zope.publisher.interfaces.http import IHTTPRequest
@@ -22,4 +23,18 @@ class PDFPeekImageScaleTraverser(object):
     def traverse(self, name, ignore):
         annotations = dict(self.context.__annotations__)
         image = annotations['pdfpeek']['image_thumbnails'][name]
-        return image
+
+        # Try determine blob name and default to "context_id_download."
+        # This is only visible if the user tried to save the file to local
+        # computer.
+        filename = getattr(image, 'filename', name)
+
+        # Sets Content-Type and Content-Length
+        set_headers(image, self.request.response)
+
+        # Set Content-Disposition
+        self.request.response.setHeader(
+            'Content-Disposition',
+            'inline; filename={0}'.format(filename)
+        )
+        return stream_data(image)

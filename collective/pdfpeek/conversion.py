@@ -3,6 +3,7 @@ from BTrees.OOBTree import OOBTree
 from OFS.Image import Image as OFSImage
 from PIL import Image
 from PyPDF2 import PdfFileReader
+from PyPDF2.generic import IndirectObject
 from PyPDF2.utils import PdfReadError
 from abc import ABCMeta
 from cStringIO import StringIO
@@ -16,6 +17,13 @@ from zope.component import getUtility
 from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import noLongerProvides
+
+try:
+    from plone.namedfile.file import NamedBlobImage
+except ImportError:
+    HAS_BLOBIMAGE = False
+else:
+    HAS_BLOBIMAGE = True
 
 import logging
 import subprocess
@@ -156,16 +164,20 @@ class AbstractPDFExtractor:
             # for each page in the pdf file,
             # set up a human readable page number counter starting at 1
             page_number = page + 1
+
             # set up the image object ids and titles
-            image_id = '%d_preview' % page_number
-            image_title = 'Page %d Preview' % page_number
-            image_thumb_id = '%d_thumb' % page_number
-            image_thumb_title = 'Page %d Thumbnail' % page_number
+            image_id = u'%d_preview' % page_number
+            image_title = u'Page %d Preview' % page_number
+            image_thumb_id = u'%d_thumb' % page_number
+            image_thumb_title = u'Page %d Thumbnail' % page_number
+
             # create a file object to store the thumbnail and preview in
             raw_image_thumb = StringIO()
             raw_image_preview = StringIO()
+
             # run ghostscript, convert pdf page into image
             raw_image = self.ghostscript_transform(page_number)
+
             # use PIL to generate thumbnail from image_result
             try:
                 img_thumb = Image.open(StringIO(raw_image))
@@ -174,26 +186,41 @@ class AbstractPDFExtractor:
                 break
 
             img_thumb.thumbnail(thumb_size, Image.ANTIALIAS)
+
             # save the resulting thumbnail in the file object
             img_thumb.save(raw_image_thumb,
                            format=self.img_thumb_format,
                            quality=self.img_thumb_quality,
                            optimize=self.img_thumb_optimize,
                            progressive=self.img_thumb_progressive)
+
             # use PIL to generate preview from image_result
             img_preview = Image.open(StringIO(raw_image))
             img_preview.thumbnail(preview_size, Image.ANTIALIAS)
+
             # save the resulting thumbnail in the file object
             img_preview.save(raw_image_preview,
                              format=self.img_preview_format,
                              quality=self.img_preview_quality,
                              optimize=self.img_preview_optimize,
                              progressive=self.img_preview_progressive)
+
             # create the OFS.Image objects
-            image_full_object = OFSImage(
-                image_id, image_title, raw_image_preview)
-            image_thumb_object = OFSImage(
-                image_thumb_id, image_thumb_title, raw_image_thumb)
+            if HAS_BLOBIMAGE:
+                image_full_object = NamedBlobImage(
+                    filename=image_id,
+                    data=raw_image_preview.getvalue(),
+                    contentType='image/' + self.img_preview_format.lower())
+                image_thumb_object = NamedBlobImage(
+                    filename=image_thumb_id,
+                    data=raw_image_thumb.getvalue(),
+                    contentType='image/' + self.img_thumb_format.lower())
+            else:
+                image_full_object = OFSImage(
+                    image_id, image_title, raw_image_preview)
+                image_thumb_object = OFSImage(
+                    image_thumb_id, image_thumb_title, raw_image_thumb)
+
             # add the objects to the images dict
             images[image_id] = image_full_object
             images[image_thumb_id] = image_thumb_object
