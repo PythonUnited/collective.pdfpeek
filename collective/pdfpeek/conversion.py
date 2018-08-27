@@ -54,18 +54,19 @@ class AbstractPDFExtractor:
     def __init__(self, context):
         """Fix other peoples missing docstrings."""
         self.context = context
+        self.path = '/'.join(self.context.getPhysicalPath())
 
     @property
-    def errmsg(self):
+    def errormsg(self):
         """Fix other peoples missing docstrings."""
-        return 'Failed to convert PDF to images with PDFPeek on {context.id}.'\
-            .format(context=self.context)
+        return 'Failed to convert PDF to images with PDFPeek on {path}.'\
+            .format(path=self.path)
 
     @property
     def successmsg(self):
         """Fix other peoples missing docstrings."""
-        return 'Converted PDF to images with PDFPeek on {context.id}.'\
-            .format(context=self.context)
+        return 'Converted PDF to images with PDFPeek on {path}.'\
+            .format(path=self.path)
 
     @property
     def content_type(self):
