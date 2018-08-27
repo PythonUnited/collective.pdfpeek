@@ -139,6 +139,10 @@ class AbstractPDFExtractor:
             data['height'] = float(self.pdf.getPage(0).mediaBox.getHeight())
             data['pages'] = self.pdf.getNumPages()
 
+        for key, value in data.items():
+            if type(value) == IndirectObject:
+                data[key] = None
+
         return data
 
     @property
