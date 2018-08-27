@@ -253,7 +253,7 @@ class AbstractPDFExtractor:
             '-dTextAlphaBits=4',
             first_page,
             last_page,
-            '-r59x56',
+            '-r144',
             '-sOutputFile=%stdout',  # noqa
             '-',
         ]
